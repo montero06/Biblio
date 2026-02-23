@@ -33,4 +33,8 @@ public class Socio {
         if (fechaFinPenalizacion == null) return false;
         return LocalDate.now().isBefore(fechaFinPenalizacion);
     }
+
+    public boolean isPenalizado() {
+        return estaPenalizado();
+    }
 }
