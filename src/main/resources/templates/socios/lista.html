@@ -63,7 +63,7 @@
             <td th:text="${socio.fechaNacimiento}"></td>
             <td>
                 <span th:if="${socio.penalizado}" class="badge badge-red"
-                      th:text="'Penalizado hasta ' + ${socio.fechaFinPenalizacion}"></span>
+                      th:text="|Penalizado hasta ${socio.fechaFinPenalizacion}|"></span>
                 <span th:unless="${socio.penalizado}" class="badge badge-ok">Activo</span>
             </td>
             <td>
