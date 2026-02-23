@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>Pr&#233;stamos</title><style>
+    body { font-family: Arial, sans-serif; margin: 0; background: #f5f5f5; }
+    nav { background: #2c3e50; padding: 10px 20px; }
+    nav a { color: white; text-decoration: none; margin-right: 20px; font-size: 15px; }
+    nav a:hover { text-decoration: underline; }
+    .container { max-width: 1000px; margin: 30px auto; background: white; padding: 20px; border: 1px solid #ccc; }
+    h1 { color: #2c3e50; margin-top: 0; }
+    table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+    th, td { border: 1px solid #ccc; padding: 8px 10px; text-align: left; }
+    th { background: #2c3e50; color: white; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    .btn { display: inline-block; padding: 6px 12px; text-decoration: none; border: 1px solid; cursor: pointer; font-size: 13px; background: #eee; }
+    .btn-primary { background: #2980b9; color: white; border-color: #2980b9; }
+    .btn-warning { background: #e67e22; color: white; border-color: #e67e22; }
+    .btn-danger  { background: #c0392b; color: white; border-color: #c0392b; }
+    .btn-success { background: #27ae60; color: white; border-color: #27ae60; }
+    .btn:hover { opacity: 0.85; }
+    .alert { padding: 10px; margin-bottom: 15px; border: 1px solid; }
+    .alert-success { background: #d4edda; border-color: #28a745; color: #155724; }
+    .alert-danger  { background: #f8d7da; border-color: #dc3545; color: #721c24; }
+    form.inline { display: inline; }
+    input[type=text], input[type=email], input[type=date], select {
+        padding: 6px; border: 1px solid #ccc; width: 100%; box-sizing: border-box; margin-bottom: 5px; }
+    label { font-weight: bold; display: block; margin-top: 10px; }
+    .field-error { color: red; font-size: 12px; }
+    .badge { padding: 3px 8px; font-size: 12px; color: white; }
+    .badge-ok   { background: #27ae60; }
+    .badge-warn { background: #e67e22; }
+    .badge-red  { background: #c0392b; }
+    .search-bar { margin-bottom: 15px; display: flex; gap: 8px; }
+    .search-bar input { flex: 1; margin-bottom: 0; }
+    .form-group { margin-bottom: 12px; }
+</style></head>
+<body>
+<nav>
+    <a href="/src/main/resources/static">Biblioteca</a>
+    <a href="/libros">Libros</a>
+    <a href="/socios">Socios</a>
+    <a href="/prestamos">Pr&#233;stamos</a>
+</nav>
+<div class="container">
+    <h1>Pr&#233;stamos</h1>
+    <div th:if="${exito}" class="alert alert-success" th:text="${exito}"></div>
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+    <a href="/prestamos/nuevo" class="btn btn-success">+ Nuevo pr&#233;stamo</a>
+
+    <table>
+        <thead><tr>
+            <th>ID</th><th>Libro</th><th>Socio</th><th>F. Pr&#233;stamo</th>
+            <th>F. L&#237;mite</th><th>F. Devoluci&#243;n</th><th>Estado</th><th>Acciones</th>
+        </tr></thead>
+        <tbody>
+        <tr th:each="p : ${prestamos}">
+            <td th:text="${p.id}"></td>
+            <td th:text="${p.libro.titulo}"></td>
+            <td th:text="${p.socio.nombre}"></td>
+            <td th:text="${p.fechaPrestamo}"></td>
+            <td th:text="${p.fechaLimite}"></td>
+            <td th:text="${p.fechaDevolucion != null ? p.fechaDevolucion : '-'}"></td>
+            <td>
+                <span th:if="${p.activo and p.calcularDiasRetraso() > 0}" class="badge badge-red">Vencido</span>
+                <span th:if="${p.activo and p.calcularDiasRetraso() == 0}" class="badge badge-warn">Activo</span>
+                <span th:unless="${p.activo}" class="badge badge-ok">Devuelto</span>
+            </td>
+            <td>
+                <form class="inline" th:if="${p.activo}"
+                      th:action="@{/prestamos/{id}/devolver(id=${p.id})}" method="post">
+                    <button type="submit" class="btn btn-success">Devolver</button>
+                </form>
+                <form class="inline" th:unless="${p.activo}"
+                      th:action="@{/prestamos/{id}/eliminar(id=${p.id})}" method="post"
+                      onsubmit="return confirm('&#191;Eliminar este pr&#233;stamo?')">
+                    <button type="submit" class="btn btn-danger">Eliminar</button>
+                </form>
+            </td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(prestamos)}">
+            <td colspan="8">No hay pr&#233;stamos registrados.</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>
